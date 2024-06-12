@@ -1,13 +1,15 @@
 import logo from './logo.svg';
 import { Component } from 'react';
 import './App.css';
+import CardList from './components/card-list/card-list.component';
 
 class App extends Component {
 
   constructor() {
     super()
     this.state = {
-      monsters: []
+      monsters: [],
+      searchField: ''
     }
     console.log('constructor');
   }
@@ -20,16 +22,29 @@ class App extends Component {
       this.setState(
         () => {
           return {monsters: users}
-        },
-        () => {
-          console.log(this.state)
         }
       ))
   }
 
 
+  onSearchChange = (event) => {
+    const searchField = event.target.value.toLocaleLowerCase()
+
+    this.setState(
+    () => {
+      return { searchField }
+    })
+  }
+
   render() {
     console.log('render');
+
+    const { monsters, searchField } = this.state
+    const { onSearchChange } = this
+
+    const filteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLocaleLowerCase().includes(searchField)
+    })
 
     return (
       <div className="App">
@@ -37,25 +52,16 @@ class App extends Component {
           className='search-box' 
           type='search' 
           placeholder='search monsters'
-          onChange={(event) => {
-            console.log(event.target.value);
-            const searchString = event.target.value.toLocaleLowerCase()
-            const filteredMonsters = this.state.monsters.filter((monster) => {
-              return monster.name.toLocaleLowerCase().includes(searchString)
-            })
-
-            this.setState(() => {
-              return { monsters: filteredMonsters }
-            })
-          }}
+          onChange={onSearchChange}
           />
-        {this.state.monsters.map((monster) => {
+        {/* {filteredMonsters.map((monster) => {
           return (
             <div key={monster.id}>
               <h1>{monster.name}</h1>
             </div>
           )
-        })}
+        })} */}
+        <CardList monsters={filteredMonsters}/>
       </div> 
     );
   }
